@@ -1,12 +1,14 @@
 package assign06;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Scanner; 
 
 /**
  * Class containing the checkFile method for checking if the (, [, and { symbols
  * in an input file are correctly matched.
  * 
- * @author Erin Parker && ??
+ * @author Erin Parker && Morgan Mischo && Casey Rand
  * @version ??
  */
 public class BalancedSymbolChecker {
@@ -20,8 +22,51 @@ public class BalancedSymbolChecker {
 	 * @throws FileNotFoundException if the file does not exist
 	 */
 	public static String checkFile(String filename) throws FileNotFoundException {
-		// FILL IN -- do not return null
-		return null;
+		File f = new File(filename); 
+		
+		if (!f.isFile())
+		{
+			throw new FileNotFoundException (); 
+		}
+		
+		ArrayStack<Character> myStack = new ArrayStack<Character>(); 
+		
+		Scanner scnr = new Scanner (f); 
+		
+		while (scnr.hasNext())
+		{
+			for (int i = 0; i < scnr.next().length(); i++)
+			{
+				if (scnr.next() == scnr.nextLine())
+				{
+					
+				}
+				char nextChar = scnr.next().charAt(i); 
+				
+				if (nextChar == '(' || nextChar == '{' || nextChar == '[' ) 
+				{
+					myStack.push(nextChar);
+				}
+				else if (nextChar == ')' || nextChar == '}' || nextChar == '}')
+				{
+					char prevChar = myStack.pop(); 
+					if (!(prevChar == '(' && nextChar == ')' || prevChar == '{' && nextChar == '}' || prevChar == '[' && nextChar == ']'))
+					{
+						
+					}
+				}
+			}
+
+		}
+		
+		if(!myStack.isEmpty())
+		{
+			
+		}
+		
+		
+		
+		
 	}
 
 	/**
@@ -37,6 +82,36 @@ public class BalancedSymbolChecker {
 		return "ERROR: Unmatched symbol at line " + lineNumber + " and column " + colNumber + ". Expected " + symbolExpected
 				+ ", but read " + symbolRead + " instead.";
 	}
+
+	/**
+	 * Use this error message in the case of an unmatched symbol at the end of the file.
+	 * 
+	 * @param symbolExpected - the matching symbol expected
+	 * @return the error message
+	 */
+	private static String unmatchedSymbolAtEOF(char symbolExpected) {
+		return "ERROR: Unmatched symbol at the end of file. Expected " + symbolExpected + ".";
+	}
+
+	/**
+	 * Use this error message in the case of an unfinished comment
+	 * (i.e., a file that ends with an open /* comment).
+	 * 
+	 * @return the error message
+	 */
+	private static String unfinishedComment() {
+		return "ERROR: File ended before closing comment.";
+	}
+
+	/**
+	 * Use this message when no unmatched symbol errors are found in the entire file.
+	 * 
+	 * @return the success message
+	 */
+	private static String allSymbolsMatch() {
+		return "No errors found. All symbols match.";
+	}
+}
 
 	/**
 	 * Use this error message in the case of an unmatched symbol at the end of the file.
