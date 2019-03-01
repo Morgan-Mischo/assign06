@@ -31,10 +31,9 @@ public class BalancedSymbolChecker {
 		
 		ArrayStack<Character> myStack = new ArrayStack<Character>(); 
 		
-		Scanner lineScan, wordScan = new Scanner (f); 
+		Scanner lineScan = new Scanner (f); 
 		int lineCount = 0;
 		boolean commentsClosed = true;
-		boolean comm1, comm2, comm3, close1, close2 = false;
 
 
 		//Continue looping while there are lines to scan.
@@ -77,6 +76,7 @@ public class BalancedSymbolChecker {
 				}
 			}
 		}
+		lineScan.close();
 		
 		if(!commentsClosed)
 			return unfinishedComment();
