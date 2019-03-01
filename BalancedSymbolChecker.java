@@ -31,42 +31,61 @@ public class BalancedSymbolChecker {
 		
 		ArrayStack<Character> myStack = new ArrayStack<Character>(); 
 		
-		Scanner scnr = new Scanner (f); 
-		
-		while (scnr.hasNext())
+		Scanner lineScan, wordScan = new Scanner (f); 
+		int lineCount = 0;
+		boolean commentsClosed = true;
+		boolean comm1, comm2, comm3, close1, close2 = false;
+
+
+		//Continue looping while there are lines to scan.
+		while (lineScan.hasNextLine())
 		{
-			for (int i = 0; i < scnr.next().length(); i++)
+			lineCount++;
+			String newLine = lineScan.nextLine();
+			System.out.println(newLine.length());
+			for (int i = 0; i < newLine.length(); i++)
 			{
-				if (scnr.next() == scnr.nextLine())
+				char nextChar = newLine.charAt(i);
+				//Check for a comments thread
+				if (i < newLine.length() - 2)
 				{
-					
+					if (nextChar == '/' && newLine.charAt(i+1) == '*' && newLine.charAt(i+2) == '*')
+						commentsClosed = false;
 				}
-				char nextChar = scnr.next().charAt(i); 
+				//Check if the open comments thread has closed
+				if (i < newLine.length() - 1 && !commentsClosed)
+				{
+					if (nextChar == '*' && newLine.charAt(i+1) == '/')
+						commentsClosed = true;
+				}
 				
-				if (nextChar == '(' || nextChar == '{' || nextChar == '[' ) 
+				if (commentsClosed)
 				{
-					myStack.push(nextChar);
-				}
-				else if (nextChar == ')' || nextChar == '}' || nextChar == '}')
-				{
-					char prevChar = myStack.pop(); 
-					if (!(prevChar == '(' && nextChar == ')' || prevChar == '{' && nextChar == '}' || prevChar == '[' && nextChar == ']'))
+					if (nextChar == '(' || nextChar == '{' || nextChar == '[' )
 					{
-						
+						myStack.push(nextChar);
+					}
+					else if (nextChar == ')' || nextChar == '}' || nextChar == '}')
+					{
+						char expectedChar = myStack.pop();
+						if(expectedChar == nextChar) 
+						{
+							//i + 1 can be used to effectively track column number
+							return unmatchedSymbol(lineCount, i + 1, nextChar, expectedChar);
+						}
 					}
 				}
 			}
-
 		}
 		
-		if(!myStack.isEmpty())
-		{
-			
-		}
+		if(!commentsClosed)
+			return unfinishedComment();
 		
+		else if(!myStack.isEmpty())
+			return unmatchedSymbolAtEOF(myStack.pop());
 		
-		
-		
+		else
+			return allSymbolsMatch();
 	}
 
 	/**
@@ -82,36 +101,6 @@ public class BalancedSymbolChecker {
 		return "ERROR: Unmatched symbol at line " + lineNumber + " and column " + colNumber + ". Expected " + symbolExpected
 				+ ", but read " + symbolRead + " instead.";
 	}
-
-	/**
-	 * Use this error message in the case of an unmatched symbol at the end of the file.
-	 * 
-	 * @param symbolExpected - the matching symbol expected
-	 * @return the error message
-	 */
-	private static String unmatchedSymbolAtEOF(char symbolExpected) {
-		return "ERROR: Unmatched symbol at the end of file. Expected " + symbolExpected + ".";
-	}
-
-	/**
-	 * Use this error message in the case of an unfinished comment
-	 * (i.e., a file that ends with an open /* comment).
-	 * 
-	 * @return the error message
-	 */
-	private static String unfinishedComment() {
-		return "ERROR: File ended before closing comment.";
-	}
-
-	/**
-	 * Use this message when no unmatched symbol errors are found in the entire file.
-	 * 
-	 * @return the success message
-	 */
-	private static String allSymbolsMatch() {
-		return "No errors found. All symbols match.";
-	}
-}
 
 	/**
 	 * Use this error message in the case of an unmatched symbol at the end of the file.
